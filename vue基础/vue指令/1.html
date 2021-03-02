@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue基础</title>
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+        .big{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        {{name}}
+        <div v-text="name"></div>
+        <div v-html="html"></div>
+        <div v-show="show">展示</div>
+        <div v-if="show">展示if</div>
+        <div v-else="show">展示if</div>
+        <div v-for="i in 2">{{i}}</div>
+        <div v-for="i in str">{{i}}</div>
+        <div v-for="i in arr">{{i}}</div>
+        <div v-for="i in obj">{{i}}</div>
+        <div :class="big">大</div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el:"#app",
+            data:{
+                name:"小王",
+                html:"<span>aaaaa</span>",
+                show:true,
+                str:"aaa",
+                arr:[1,2],
+                obj:{name:11},
+                big:"big"
+            }
+        })
+    </script>
+</body>
+</html>

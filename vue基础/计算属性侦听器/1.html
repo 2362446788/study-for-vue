@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="name">
+        <h1>{{name.split('').reverse().join('')}}</h1>
+        <h2>{{reverseName}}</h2>
+        <h2>{{name|key}}</h2>
+        <h2>{{name|tar(obj.age)}}</h2>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: "#app",
+            data: {
+                name: "哈哈哈123",
+                obj: {
+                    age: 10
+                },
+                arr: [1, 2]
+            },
+            computed: {
+                reverseName() {
+                    return this.name.split('').reverse().join('');
+                }
+            },
+            watch: {
+                name(n, o) {
+                    console.log(n, o);
+                },
+                obj: {
+                    deep: true,
+                    immediate: true,
+                    handler(n, o) {
+                        console.log("ahhah");
+                    }
+                },
+                "obj.age": function (n, o) {
+                    console.log("hehhe");
+                },
+                arr: {
+                    deep: true,
+                    immediate: true,
+                    handler(n, o) {
+                        console.log("数组");
+                    }
+                },
+            },
+            filters: {
+                // 将管道符前面的值传递给val
+                key(val) {
+                    return val + "12";
+                },
+                tar(val, tar) {
+                    return val + tar;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

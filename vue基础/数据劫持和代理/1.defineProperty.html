@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        {{name}}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: "#app",
+            data: {
+                name: "小王"
+            }
+        })
+        let obj = {
+            name: "小李",
+            age: 10
+        }
+        // 对obj进行数据劫持,这样数据就能被劫持
+        function defineReactive(target, key, value) {
+            Object.defineProperty(target, key, {
+                get() {
+                    return value;
+                },
+                set(val) {
+                    value = val;
+                }
+            })
+        }
+        for(let key in obj){
+            defineReactive(obj,key,obj[key]);
+        }
+    </script>
+</body>
+
+</html>

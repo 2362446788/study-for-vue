@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="name">
+        <input type="text" v-mode="age">
+        <h1>{{name}}</h1>
+        <h2>{{age}}</h2>
+    </div>
+    <script>
+        // 数据劫持
+        function observer(data) {
+            // 简单判断data是不是对象
+            if (Object.prototype.toString.call(data) !== "[object Object]") return;
+            let keys = Object.keys(data);
+            keys.forEach(key => {
+                defineReactive(data, key, data[key]);
+            })
+        }
+
+        function defineReactive(target, key, val) {
+            // 深层次遍历
+            observer(val);
+            // 每一个key都有自己的一个事件池
+            let dep = new Dep();
+            Object.defineProperty(target, key, {
+                enumerable: true,
+                get: function proxyGetter() {
+                    if (Dep.target) {
+                        dep.depend(Dep.target);
+                    }
+                    return val;
+                },
+                set: function prosySetter(newValue) {
+                    if (newValue !== val) {
+                        observer(newValue);
+                        val = newValue;
+                        dep.notify();
+                    }
+                }
+            })
+        }
+
+        // 转换语法
+        function nodeToFragment(el, vm) {
+            // 通过采用文档碎片的方式模拟实现虚拟dom的转换
+            let fragment = document.createDocumentFragment();
+            let child;
+            while (child = el.firstChild) {
+                // 将原本的真实dom进行转换
+                compile(child, vm);
+                fragment.appendChild(child);
+            }
+            el.appendChild(fragment);
+        }
+
+        function compile(node, vm) {
+            // 根据节点的格式进行转换，主要是元素节点和文本节点
+            // 1 元素节点  3 文本节点  8 注释节点  9 根节点  11 文档碎片
+            if (node.nodeType === 1) {
+                // 元素节点需要处理它的行内属性和子节点
+                // 获取所有的行内属性,得到一个类数组
+                let attrs = node.attributes;
+                [...attrs].forEach(item => {
+                    if (/^v-/.test(item.nodeName)) {
+                        let vName = item.nodeValue;
+                        let tVal = vm.$data[vName];
+                        node.value = tVal;
+                        // 使用过就添加一个站岗的订阅者
+                        new Watcher(node, vName, vm);
+                        // 监听input事件，实施修改
+                        node.addEventListener("input", e => {
+                            vm.$data[vName] = e.target.value;
+                        })
+                    }
+                });
+
+                // 递归处理子节点
+                [...node.childNodes].forEach(item => {
+                    compile(item, vm);
+                })
+            } else {
+                // 文本节点处理
+                // 获取到文本节点的文本值
+                let textContent = node.textContent; // {{name}}
+                let reg = /\{\{(\w+)\}\}/;
+                if (reg.test(textContent)) {
+                    // 进行匹配将name转换为对应的值
+                    textContent = textContent.replace(reg, (_, target) => {
+                        new Watcher(node, target, vm);
+                        return vm.$data[target];
+                    })
+                }
+                node.textContent = textContent;
+            }
+        }
+
+        // 通过观察者模式实现数据同步修改
+        // 订阅器
+        class Dep {
+            constructor() {
+                this.sub = [];
+            }
+            depend(tar) {
+                this.sub.push(tar);
+            }
+            notify() {
+                this.sub.forEach((item) => {
+                    item.update();
+                })
+            }
+        }
+
+        // 订阅者
+        class Watcher {
+            constructor(node, key, vm) {
+                // 目的为了向事件池中添加订阅者
+                Dep.target = this;
+                this.node = node;
+                this.key = key;
+                this.vm = vm;
+                // 配合Dep.target，在获取数据值时添加进去
+                this.getValue();
+                // 最后消除，防止其他地方更改之也添加进去，导致事件池过大
+                Dep.target = null;
+            }
+            update() {
+                this.getValue();
+                if (this.node.nodeType === 1) {
+                    this.node.value = this.value;
+                } else {
+                    this.node.textContent = this.value;
+                }
+            }
+            // 添加订阅者和获取最新的数据
+            getValue() {
+                this.value = this.vm.$data[this.key];
+            }
+        }
+
+        class Vue {
+            constructor(options) {
+                this.$el = document.querySelector(options.el);
+                this.$data = options.data;
+                // 劫持数据
+                observer(this.$data);
+
+                // 转换vue语法
+                nodeToFragment(this.$el, this);
+            }
+        }
+        let vm = new Vue({
+            el: "#app",
+            data: {
+                name: "学习mvvm",
+                age:10,
+                arr:{
+                    name:11
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

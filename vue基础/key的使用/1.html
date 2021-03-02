@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .a{
+            width: 200px;
+            height: 200px;
+            background-color: aqua;
+        }
+        .b{
+            width: 100px;
+            height: 100px;
+            background-color: darkgoldenrod;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="name">
+        {{name}}
+        <div  v-for="(item,index) in arr">
+            <input type="checkbox">{{item.name}} {{index}}<button @click="clear(index)">X</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            data:{
+                name:"",
+                arr:[{
+                    name:"xiaowang"
+                },{
+                    name:"xiaoli"
+                },{
+                    name:"xiaowwu"
+                }]
+            },
+            methods:{
+                clear(n){
+                    this.arr.splice(n,1);
+                }
+            },
+            mounted() {
+                console.log('mounted');
+            },
+            beforeUpdate() {
+                console.log("beforeUpdate");
+            },
+            updated() {
+                console.log("updated");
+            },
+        }).$mount("#app")
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="name">
+        <!-- 在name长度变化的时候密码和姓名更迭，但是input框不变，采用就地复用 -->
+        <div v-if="name.length>3">
+            密码：<input type="text" placeholder="密码">
+        </div>
+        <div v-else>
+            姓名：<input type="text" placeholder="姓名">
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el:"#app",
+            data:{
+                name:""
+            }
+        })
+    </script>
+</body>
+</html>

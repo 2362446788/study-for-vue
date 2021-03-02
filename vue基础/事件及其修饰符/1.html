@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .a{
+            width: 200px;
+            height: 200px;
+            background-color: aqua;
+        }
+        .b{
+            width: 100px;
+            height: 100px;
+            background-color: darkgoldenrod;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div v-on:click="fn">111</div>
+        <div @click="fn(2,$event)">222</div>
+        <div @click="fn1('stop1')"><div @click.stop="fn2('stop2')">stop2</div></div>
+        <div @click.capture="fn3('capture3')"><div @click="fn4('capture4')">stop4</div></div>
+        <div class="a" @click.self.once="a">
+            <div class="b" @click.self="b">
+
+            </div>
+        </div>
+        <input type="text" v-model.number="name">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            data:{
+                name:""
+            },
+            methods:{
+                fn(n){
+                    console.log(n);
+                },
+                fn1(n){
+                    console.log(n);
+                },
+                fn2(n){
+                    console.log(n);
+                },
+                fn3(n){
+                    console.log(n);
+                },
+                fn4(n){
+                    console.log(n);
+                },
+                a(){
+                    console.log('a');
+                },
+                b(){
+                    console.log('b');
+                },
+                c(){
+                    console.log(this.name,typeof this.name);
+                }
+            }
+        }).$mount("#app")
+    </script>
+</body>
+</html>
